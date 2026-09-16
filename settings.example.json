@@ -1,0 +1,76 @@
+﻿{
+  "active_profile_id": "llama_cpp",
+  "profiles": [
+    {
+      "id": "llama_cpp",
+      "name": "本地 Hy-MT2 & GLM-OCR (8001)",
+      "base_url": "http://127.0.0.1:8001/v1",
+      "api_key": "sk-no-key",
+      "model": "Hy-MT2-7B",
+      "ocr_model": "GLM-OCR"
+    },
+    {
+      "id": "ollama",
+      "name": "本地 Ollama",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key": "ollama",
+      "model": "qwen2.5:7b"
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek API",
+      "base_url": "https://api.deepseek.com/v1",
+      "api_key": "YOUR_DEEPSEEK_API_KEY_HERE",
+      "model": "deepseek-chat"
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI API",
+      "base_url": "https://api.openai.com/v1",
+      "api_key": "YOUR_OPENAI_API_KEY_HERE",
+      "model": "gpt-4o-mini"
+    }
+  ],
+  "temperature": 0.3,
+  "timeout_seconds": 30.0,
+  "max_retries": 2,
+  "auto_detect_language": true,
+  "custom_prompts": {
+    "translate": "",
+    "polish": "",
+    "dictionary": ""
+  },
+  "last_src_lang": "Auto",
+  "last_target_lang": "English",
+  "last_mode": "translate",
+  "window_geometry": {
+    "maximized": false,
+    "x": -1,
+    "y": -1,
+    "width": 1050,
+    "height": 680,
+    "splitter_sizes": [
+      510,
+      510
+    ]
+  },
+  "minimize_to_tray_on_close": true,
+  "enable_system_tray": true,
+  "tray_notification_shown": false,
+  "ocr_base_url": "http://127.0.0.1:8001/v1",
+  "ocr_model": "GLM-OCR",
+  "ocr_api_key": "sk-no-key",
+  "recent_other_src_langs": [
+    "Korean",
+    "French"
+  ],
+  "output_format": "markdown",
+  "history_limit": 100,
+  "eco_mode": false,
+  "app_theme": "dark",
+  "tts_suppress_missing_voice_dialog": false,
+  "recent_other_target_langs": [
+    "German",
+    "Korean"
+  ]
+}
