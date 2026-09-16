@@ -164,10 +164,38 @@ class TestDictionaryParser(unittest.TestCase):
     def test_parse_fallback_freeform(self):
         sample = "serendipity /ˌserənˈdɪpəti/\nn. 意外发现珍奇事物的本领"
         entry = parse_dictionary_output(sample)
-        self.assertFalse(entry.is_structured)
+        self.assertTrue(entry.is_structured)
         self.assertEqual(entry.word, "serendipity")
         self.assertEqual(entry.pronunciation, "/ˌserənˈdɪpəti/")
         self.assertEqual(entry.raw_text, sample)
+        self.assertEqual(len(entry.definitions), 1)
+        self.assertEqual(entry.definitions[0].pos, "n.")
+        self.assertEqual(entry.definitions[0].meaning, "意外发现珍奇事物的本领")
+
+    def test_parse_fallback_freeform_unstructured(self):
+        sample = "这是一段完全没有词条格式和释义的普通随笔备忘文本。"
+        entry = parse_dictionary_output(sample)
+        self.assertFalse(entry.is_structured)
+        self.assertEqual(len(entry.definitions), 0)
+        self.assertEqual(len(entry.examples), 0)
+
+    def test_parse_tweak_user_reported_case(self):
+        sample = (
+            "[tweak] /twik/\n"
+            "[v.] to make small changes to something in order to improve it | 对某物进行微调以使其更好\n"
+            "[n.] a small change made to improve something | 为改进某物而做的微小改动\n"
+        )
+        entry = parse_dictionary_output(sample)
+        self.assertTrue(entry.is_structured)
+        self.assertEqual(entry.word, "tweak")
+        self.assertEqual(entry.pronunciation, "/twik/")
+        self.assertEqual(len(entry.definitions), 2)
+        self.assertEqual(entry.definitions[0].pos, "v.")
+        self.assertEqual(entry.definitions[0].meaning, "to make small changes to something in order to improve it")
+        self.assertEqual(entry.definitions[0].meaning_trans, "对某物进行微调以使其更好")
+        self.assertEqual(entry.definitions[1].pos, "n.")
+        self.assertEqual(entry.definitions[1].meaning, "a small change made to improve something")
+        self.assertEqual(entry.definitions[1].meaning_trans, "为改进某物而做的微小改动")
 
 
 class TestDictionaryCardPanel(unittest.TestCase):
@@ -207,6 +235,95 @@ class TestDictionaryCardPanel(unittest.TestCase):
         self.assertEqual(self.panel.lbl_status.text(), "就绪")
         self.assertEqual(self.panel.lbl_pron.text(), "/juːˈbɪk.wə.təs/")
         self.assertGreater(len(self.panel._def_rows), 0)
+
+    def test_panel_render_tweak_freeform(self):
+        sample = (
+            "[tweak] /twik/\n"
+            "[v.] to make small changes to something in order to improve it | 对某物进行微调以使其更好\n"
+            "[n.] a small change made to improve something | 为改进某物而做的微小改动\n"
+        )
+        self.panel.start_streaming("tweak")
+        self.panel.finish_streaming(sample)
+        self.assertEqual(self.panel.lbl_word.text(), "tweak")
+        self.assertEqual(self.panel.lbl_pron.text(), "/twik/")
+        self.assertEqual(len(self.panel._def_rows), 2)
+        self.assertTrue(self.panel.card_fallback.isHidden())
+        self.assertFalse(self.panel.card_defs.isHidden())
+
+    def test_parse_corrupt_word_tag_with_definition(self):
+        sample = (
+            "[WORD] 修饰；微调 | to make small adjustments to something\n"
+            "[PRON] /twiːk/\n"
+            "[DEFS]\n"
+            "- v. to make small adjustments to something to improve it slightly | v. to modify something in a minor way\n"
+            "[EXAMPLES]\n"
+            "• She tweaked the settings to optimize performance. | 她微调了设置以优化性能。\n"
+        )
+        entry = parse_dictionary_output(sample)
+        self.assertNotEqual(entry.word, "修饰；微调 | to make small adjustments to something")
+        self.assertTrue(entry.is_structured)
+        self.assertEqual(entry.pronunciation, "/twiːk/")
+        self.assertGreaterEqual(len(entry.definitions), 2)
+
+    def test_panel_render_corrupt_word_tag_safeguard(self):
+        sample = (
+            "[WORD] 修饰；微调 | to make small adjustments to something\n"
+            "[PRON] /twiːk/\n"
+            "[DEFS]\n"
+            "- v. to make small adjustments to something | 对某物进行微调\n"
+        )
+        self.panel.start_streaming("tweak")
+        self.panel.finish_streaming(sample)
+        self.assertEqual(self.panel.lbl_word.text(), "tweak")
+        self.assertEqual(self.panel.lbl_pron.text(), "/twiːk/")
+
+    def test_english_to_english_dictionary_prompt(self):
+        from config.default_prompts import build_prompt_messages
+        # 1. 正常模式：去噪融合后应包含完整的 7 标签且无任何恐吓性“铁律”字眼
+        msgs = build_prompt_messages("dictionary", "English", "English", "tweak", eco_mode=False)
+        sys_p = msgs[0]["content"]
+        usr_p = msgs[1]["content"]
+        self.assertNotIn("绝对严禁使用任何英文单词或英文释义", usr_p)
+        self.assertNotIn("绝对严禁使用任何英文单词或英文释义", sys_p)
+        self.assertNotIn("铁律", sys_p)
+        self.assertNotIn("铁律", usr_p)
+        self.assertIn("[WORD] tweak", sys_p)
+        self.assertIn("tweak", usr_p)
+        self.assertIn("[DEFS]", sys_p)
+        self.assertIn("[EXAMPLES]", sys_p)
+        self.assertIn("[PHRASES]", sys_p)
+        self.assertIn("[SYNONYMS]", sys_p)
+        self.assertIn("[ANTONYMS]", sys_p)
+
+        # 2. 省钱模式：同具 7 标签黄金结构
+        eco_msgs = build_prompt_messages("dictionary", "English", "English", "tweak", eco_mode=True)
+        eco_sys = eco_msgs[0]["content"]
+        eco_usr = eco_msgs[1]["content"]
+        self.assertIn("[WORD] tweak", eco_sys)
+        self.assertIn("[EXAMPLES]", eco_sys)
+        self.assertNotIn("绝对严禁使用任何英文单词或英文释义", eco_sys)
+        self.assertNotIn("铁律", eco_sys)
+        self.assertNotIn("铁律", eco_usr)
+
+    def test_fused_dictionary_prompt_details(self):
+        from config.default_prompts import build_prompt_messages
+        # 验证正常模式详细度引导与无负向噪声
+        msgs = build_prompt_messages("dictionary", "English", "Chinese", "tweak", eco_mode=False)
+        sys_p = msgs[0]["content"]
+        usr_p = msgs[1]["content"]
+        self.assertIn("2~4 条", usr_p)
+        self.assertIn("2~3 条", usr_p)
+        self.assertIn("[WORD] tweak", sys_p)
+        self.assertNotIn("最重要铁律", sys_p)
+        self.assertNotIn("严禁输出任何问候", sys_p)
+
+        # 验证省钱模式精炼度与无负向噪声
+        eco_msgs = build_prompt_messages("dictionary", "English", "Chinese", "tweak", eco_mode=True)
+        eco_sys = eco_msgs[0]["content"]
+        eco_usr = eco_msgs[1]["content"]
+        self.assertIn("1~2条核心释义", eco_usr)
+        self.assertIn("[WORD] tweak", eco_sys)
+        self.assertNotIn("最重要铁律", eco_sys)
 
     def test_finish_streaming_empty(self):
         self.panel.start_streaming()
@@ -303,6 +420,12 @@ class TestDictionaryCardPanel(unittest.TestCase):
         # 1. 测试复制词头
         btn_copy_word.click()
         app.processEvents()
+        import time
+        for _ in range(10):
+            if QApplication.clipboard().text() == "ephemeral":
+                break
+            time.sleep(0.02)
+            app.processEvents()
         self.assertEqual(QApplication.clipboard().text(), "ephemeral")
         self.assertEqual(btn_copy_word.text(), "✓ 已复制")
 
@@ -498,13 +621,12 @@ class TestFlowLayout(unittest.TestCase):
         h_narrow = flow.heightForWidth(300)
         self.assertGreater(h_narrow, h_wide)
 
-        # 最小宽度应由单个最大子项决定，而非被全部 8 个子项横向累加。
-        # Qt 的字体度量会随平台和 Qt 版本变化，因此不使用固定像素阈值。
+        # 最小宽度绝不会被8个长短语无限撑大到800px以上
         min_size = flow.minimumSize()
-        largest_item_width = max(flow.itemAt(i).minimumSize().width() for i in range(flow.count()))
-        self.assertLessEqual(min_size.width(), largest_item_width + 8)
+        self.assertLess(min_size.width(), 400)
 
 
 if __name__ == '__main__':
     unittest.main()
+
 

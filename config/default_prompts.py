@@ -97,8 +97,16 @@ def get_dictionary_prompts(
         else:
             primary_lang = "英文"
             secondary_lang = "中文"
+    elif src_lang == target_lang:
+        # 同语言查询（如 英文->英文，日文->日文）
+        if src_lang != "Chinese":
+            primary_lang = s_name
+            secondary_lang = "中文"
+        else:
+            primary_lang = "中文"
+            secondary_lang = "英文"
     else:
-        # 两个外语之间（如 English -> Japanese）或均为中文
+        # 两个外语之间（如 English -> Japanese）
         primary_lang = s_name
         secondary_lang = t_name
 
@@ -111,16 +119,19 @@ def get_dictionary_prompts(
 
     if primary_lang == "日文":
         word_ex = "食べる"
-        pron_ex = "使用单个平假名注音如 /たべる/，严禁重复输出两遍"
+        pron_ex = "使用平假名注音如 /たべる/"
         defs_ex = (
             "- 動詞. 食物を口に入れて噛んで飲み込むこと | 吃，进食\n"
             "- 名詞. 食事を摂る行為 | 进餐，用餐"
         )
-        examples_ex = "• 子供たちは学校で毎日食べる。 | 孩子们每天在学校吃饭。"
+        examples_ex = (
+            "• 子供たちは学校で毎日食べる。 | 孩子们每天在学校吃饭。\n"
+            "• 家族と一緒に夕食を食べた。 | 和家人一起吃了晚餐。"
+        )
         phrases_ex = "食事をする | 进餐, 朝食を食べる | 吃早餐"
         syn_ex = "食する | 吃，进食, 食事をする | 吃饭"
         ant_ex = "食べない | 不吃, 断食する | 禁食"
-        forbidden_note = "【绝对禁令】：严禁出现任何英文单词或英文释义（例如严禁输出 to eat 或 eat food 等），释义首部分必须是日文解释！"
+        forbidden_note = "严禁出现任何英文单词或英文释义，释义首部分必须为日文解释。"
     elif primary_lang == "英文":
         word_ex = "eat"
         pron_ex = "使用标准国际音标如 /iːt/"
@@ -128,66 +139,82 @@ def get_dictionary_prompts(
             "- v. to put food into the mouth and chew and swallow it | 吃，进食\n"
             "- n. an act of eating food | 进餐行为"
         )
-        examples_ex = "• Children should eat healthy food. | 孩子们应该吃健康的食物。"
+        examples_ex = (
+            "• Children should eat healthy food. | 孩子们应该吃健康的食物。\n"
+            "• We ate dinner together last night. | 我们昨晚一起吃了晚餐。"
+        )
         phrases_ex = "eat out | 外出就餐, have a meal | 吃饭"
         syn_ex = "consume | 摄入，吃, dine | 用餐"
         ant_ex = "fast | 禁食, skip meals | 节食"
-        forbidden_note = "【绝对禁令】：严禁出现日文等任何第三方无关语言！"
+        forbidden_note = f"严禁混入{forbidden_str}等第三方无关语言。"
     else:
         word_ex = "词条原形"
         pron_ex = f"使用{primary_lang}标准读音/音标"
         defs_ex = f"- 词性. {primary_lang}母语核心释义 | {secondary_lang}对照释义"
-        examples_ex = f"• {primary_lang}典型例句 | {secondary_lang}对照译文"
+        examples_ex = (
+            f"• {primary_lang}典型例句 1 | {secondary_lang}对照译文 1\n"
+            f"• {primary_lang}典型例句 2 | {secondary_lang}对照译文 2"
+        )
         phrases_ex = f"{primary_lang}搭配 1 | {secondary_lang}简释, {primary_lang}搭配 2 | {secondary_lang}简释"
         syn_ex = f"{primary_lang}近义词 1 | {secondary_lang}简释"
         ant_ex = f"{primary_lang}反义词 1 | {secondary_lang}简释"
-        forbidden_note = f"【绝对禁令】：严禁出现任何非{primary_lang}与非{secondary_lang}的第三方无关语言！"
+        forbidden_note = f"严禁混入{forbidden_str}等第三方无关语言。"
+
+    clean_word = text.strip()
 
     if eco_mode:
         sys_prompt = (
             f"你是一部简明【{primary_lang}-{secondary_lang}】结构化双语词典。\n"
-            f"严禁出现{forbidden_str}等第三语言。严格按以下标签输出：\n"
-            "[WORD] [PRON] [DEFS] [EXAMPLES] [PHRASES] [SYNONYMS] [ANTONYMS]"
+            f"全程仅使用【{primary_lang}】与【{secondary_lang}】，{forbidden_note}\n"
+            "必须严格按以下固定标签换行输出，不要输出任何开场白或多余说明：\n\n"
+            f"[WORD] {clean_word}\n"
+            f"[PRON] {pron_ex}\n"
+            "[DEFS]\n"
+            f"- 词性. {primary_lang}核心释义 | {secondary_lang}对照释义\n"
+            "[EXAMPLES]\n"
+            f"• {primary_lang}例句 | {secondary_lang}对照译文\n"
+            f"[PHRASES] {phrases_ex}\n"
+            f"[SYNONYMS] {syn_ex}\n"
+            f"[ANTONYMS] {ant_ex}"
         )
         usr_prompt = (
-            f"[{s_name}->{t_name}]\n{text}\n\n"
-            f"【核心约束】：[DEFS] 释义必须为【{primary_lang}核心释义 | {secondary_lang}对照释义】，以竖线'|'分隔，严禁出现第三语言；[EXAMPLES] 必须为【{primary_lang}例句 | {secondary_lang}译文】。"
+            f"[{s_name}->{t_name}]\n{clean_word}\n\n"
+            "【输出规范】：\n"
+            f"1. [WORD] 必须且仅输出待查单词本身原形：[WORD] {clean_word}（请勿附加中文或释义）；\n"
+            f"2. [PRON] {pron_ex}；\n"
+            f"3. [DEFS] 1~2条核心释义，格式为【{primary_lang}核心释义 | {secondary_lang}对照释义】，以竖线'|'明确分隔；\n"
+            f"4. [EXAMPLES] 包含典型双语例句【{primary_lang}例句 | {secondary_lang}对照译文】；\n"
+            f"5. [PHRASES]、[SYNONYMS]、[ANTONYMS] 核心搭配与近反义词；\n"
+            f"6. 严格限定【{primary_lang}】与【{secondary_lang}】，{forbidden_note}"
         )
+        if output_format == "plain":
+            sys_prompt += "\n\n请直接输出无格式纯文本，严禁使用任何 Markdown 标记。"
         return sys_prompt, usr_prompt
 
     sys_prompt = (
-        f"你是一部权威且详尽的现代【{primary_lang}与{secondary_lang}】双语结构化词典。\n"
-        f"【当前设定的双语语言对】：【{primary_lang}】与【{secondary_lang}】。\n"
-        f"【最重要铁律 - 严格限定两门语言】：\n"
-        f"1. 本次查询输出的所有内容必须且仅由【{primary_lang}】和【{secondary_lang}】构成！\n"
-        f"2. 绝对严禁出现任何【{forbidden_str}】等第三方无关语言！{forbidden_note}\n\n"
-        "【输出排版铁律】：\n"
-        "1. 针对用户查询的词汇或短语，严禁输出任何问候、开场白、解释或总结废话；\n"
-        "2. 严禁出现连续空行，所有内容必须按以下固定标签协议精确输出：\n\n"
-        f"[WORD] {primary_lang}词条原形（如：{word_ex}）\n"
-        f"[PRON] 读音/音标（{pron_ex}）\n"
+        f"你是一部权威详尽的现代【{primary_lang}-{secondary_lang}】结构化双语词典。\n"
+        f"全程仅使用【{primary_lang}】与【{secondary_lang}】，{forbidden_note}\n"
+        "请直接按以下固定标签协议输出完整词典条目，严禁输出任何开场白或多余闲聊：\n\n"
+        f"[WORD] {clean_word}\n"
+        f"[PRON] {pron_ex}\n"
         "[DEFS]\n"
-        f"- 词性. {primary_lang}母语核心释义 | {secondary_lang}对照释义（必须严格由【{primary_lang}母语释义 | {secondary_lang}对照释义】构成，以竖线'|'明确分隔，绝不允许使用第三语言！例如：\n{defs_ex}）\n"
+        f"{defs_ex}\n"
         "[EXAMPLES]\n"
-        f"• {primary_lang}典型例句 | {secondary_lang}对照译文（必须严格由【{primary_lang}例句 | {secondary_lang}对照译文】构成，以竖线'|'明确分隔，严禁缺失翻译，严禁只有单语！）\n"
-        f"• {examples_ex}\n"
+        f"{examples_ex}\n"
         f"[PHRASES] {phrases_ex}\n"
         f"[SYNONYMS] {syn_ex}\n"
         f"[ANTONYMS] {ant_ex}"
     )
 
     usr_prompt = (
-        f"请严格按结构化协议解析以下词汇/短语：\n\n{text}\n\n"
-        f"【语言环境配置】：源语言为【{s_name}】，目标语言为【{t_name}】。\n"
-        "【排版与语言绝对铁律】：\n"
-        f"1. 语言范围严格限定：本词典全程严格限定为【{primary_lang}】与【{secondary_lang}】两种语言，绝对严禁出现任何【{forbidden_str}】等第三方无关语言！{forbidden_note}\n"
-        f"2. [WORD] 词头：输出对应【{primary_lang}】词条原形；\n"
-        f"3. [PRON] 读音：提供标准【{primary_lang}】读音（{pron_ex}）；\n"
-        f"4. [DEFS] 核心释义（必须严格双语对照）：每条释义必须且仅由【{primary_lang}母语核心释义 | {secondary_lang}对照释义】构成，以竖线'|'明确分隔。例如：\n"
-        f"{defs_ex}\n"
-        f"   【特别警告】：核心释义的首部分必须是地道纯正的【{primary_lang}】母语解释，次部分是【{secondary_lang}】对照翻译，绝对严禁使用任何英文单词或英文释义！\n"
-        f"5. [EXAMPLES] 典型双语例句：必须严格由【{primary_lang}例句 | {secondary_lang}对照译文】构成，以竖线'|'明确分隔，每行一条，严禁跨行换行，绝对严禁只输出单语，绝对严禁缺失翻译！\n"
-        f"6. [PHRASES]、[SYNONYMS]、[ANTONYMS]：输出【{primary_lang}】常用搭配、同义词与反义词（每项附带【{secondary_lang}】对照简释）。"
+        f"请为以下词汇/短语提供翔实完整的【{primary_lang}-{secondary_lang}】双语词典解析：\n\n{clean_word}\n\n"
+        "【输出规范】：\n"
+        f"1. [WORD] 词头：必须且仅输出待查单词本身原形：[WORD] {clean_word}（请勿在此行附加释义或竖线）；\n"
+        f"2. [PRON] 读音：输出标准{primary_lang}读音或国际音标（如 {pron_ex}）；\n"
+        f"3. [DEFS] 释义：按词性提供 2~4 条常用核心释义，格式必须为“- 词性. {primary_lang}核心释义 | {secondary_lang}对照释义”；\n"
+        f"4. [EXAMPLES] 例句：提供 2~3 条自然地道的双语例句，每行一条，格式必须为“• {primary_lang}例句 | {secondary_lang}对照译文”；\n"
+        f"5. [PHRASES]、[SYNONYMS]、[ANTONYMS]：提供常用短语搭配、近义词与反义词，各附{secondary_lang}简释；\n"
+        f"6. 语言限定：全篇仅使用【{primary_lang}】与【{secondary_lang}】，{forbidden_note}"
     )
 
     if output_format == "plain":
@@ -340,10 +367,15 @@ def build_prompt_messages(
                     )
                 user_content = f"请输出【{text}】的同义词与反义词（参考语言：{target_lang}）"
             else:
-                system_content = "简明词典。直接输出词性、主要释义，不输出引言废话。"
-                user_content = f"[{src_lang}->{target_lang}]\n{text}"
-            if output_format == "plain" and dict_type != "syn_ant":
-                system_content += " 纯文本格式，勿用Markdown。"
+                dict_sys, dict_usr = get_dictionary_prompts(
+                    src_lang=src_lang,
+                    target_lang=target_lang,
+                    text=text,
+                    eco_mode=True,
+                    output_format=output_format
+                )
+                system_content = custom_system_prompt.strip() if custom_system_prompt.strip() else dict_sys
+                user_content = dict_usr
         else:
             system_content = "简洁回答。"
             user_content = text

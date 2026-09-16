@@ -497,6 +497,7 @@ class DictionaryCardPanel(QFrame):
 
         # 词头预填：若传入了待查词，微秒级在词头卡片展现待查词
         clean_q = query_word.strip()
+        self._query_word = clean_q
         if clean_q:
             self.lbl_word.setText(clean_q)
             self.btn_copy_word.setEnabled(True)
@@ -590,8 +591,15 @@ class DictionaryCardPanel(QFrame):
         self._current_entry = entry
 
         # 1. 更新词头与读音
-        if entry.word:
-            self.lbl_word.setText(entry.word)
+        clean_word = entry.word.strip()
+        query_word = getattr(self, "_query_word", "").strip()
+        is_valid_word = bool(clean_word and '|' not in clean_word and len(clean_word) <= 35)
+        if is_valid_word:
+            self.lbl_word.setText(clean_word)
+            self.btn_copy_word.setEnabled(True)
+            self.btn_speak_word.setEnabled(True)
+        elif query_word:
+            self.lbl_word.setText(query_word)
             self.btn_copy_word.setEnabled(True)
             self.btn_speak_word.setEnabled(True)
 
@@ -651,8 +659,8 @@ class DictionaryCardPanel(QFrame):
         elif is_final:
             self.card_extras.hide()
 
-        # 5. 降级备用纯文本卡片（仅当完全无结构化内容时）
-        if not entry.definitions and not entry.examples and entry.raw_text and not entry.is_structured:
+        # 5. 降级备用纯文本卡片（仅当最终完成且完全无结构化内容时）
+        if is_final and not entry.definitions and not entry.examples and entry.raw_text and not entry.is_structured:
             self.card_fallback.show()
             self.lbl_fallback.setText(entry.raw_text)
         else:
@@ -747,7 +755,15 @@ class DictionaryCardPanel(QFrame):
         clean_word = word.strip()
         if not clean_word or clean_word in ["词条解析", "正在查询..."]:
             return
-        QApplication.clipboard().setText(clean_word)
+        cb = QApplication.clipboard()
+        cb.setText(clean_word)
+        if cb.text() != clean_word:
+            import time
+            for _ in range(5):
+                time.sleep(0.01)
+                cb.setText(clean_word)
+                if cb.text() == clean_word:
+                    break
         orig_text = btn.text()
         orig_tooltip = btn.toolTip()
         orig_style = btn.styleSheet()
