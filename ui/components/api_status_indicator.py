@@ -20,6 +20,8 @@ class PingWorker(QThread):
     def run(self):
         t0 = time.time()
         url = self.base_url.rstrip("/")
+        if url.endswith("/chat/completions"):
+            url = url[:-17].rstrip("/")
         if not url.endswith("/models"):
             url += "/models"
         try:

@@ -112,6 +112,14 @@ class TestCoreLogic(unittest.TestCase):
         client2 = LLMClient(base_url="http://127.0.0.1:8080/v1", timeout=30.0)
         self.assertEqual(client2._get_endpoint(), "http://127.0.0.1:8080/v1/chat/completions")
 
+        # 火山引擎等带 /v3 版本号的端点
+        client3 = LLMClient(base_url="https://ark.cn-beijing.volces.com/api/coding/v3")
+        self.assertEqual(client3._get_endpoint(), "https://ark.cn-beijing.volces.com/api/coding/v3/chat/completions")
+
+        # 直接指定 /chat/completions 的端点
+        client4 = LLMClient(base_url="https://api.example.com/custom/chat/completions")
+        self.assertEqual(client4._get_endpoint(), "https://api.example.com/custom/chat/completions")
+
     def test_settings_persistence(self):
         test_file = PROJECT_ROOT / "tests" / "temp_settings.json"
         if test_file.exists():

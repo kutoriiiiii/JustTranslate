@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Unit tests for the About tab in SettingsDialog."""
 
 import unittest
@@ -35,9 +35,9 @@ class TestAboutTab(unittest.TestCase):
         self.assertIn(APP_AUTHOR, label_texts)
         self.assertEqual(APP_AUTHOR, "Kutori")
 
-        # Verify version is 1.0.0
+        # Verify version is 1.0.1
         self.assertIn(APP_VERSION, label_texts)
-        self.assertEqual(APP_VERSION, "1.0.0")
+        self.assertEqual(APP_VERSION, "1.0.1")
 
         # Verify app name
         self.assertIn(APP_NAME, label_texts)

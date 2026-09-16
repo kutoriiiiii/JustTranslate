@@ -26,12 +26,13 @@ class LLMClient:
         return headers
 
     def _get_endpoint(self) -> str:
-        if self.base_url.endswith("/v1"):
-            return f"{self.base_url}/chat/completions"
-        elif self.base_url.endswith("/chat/completions"):
-            return self.base_url
-        else:
-            return f"{self.base_url}/v1/chat/completions"
+        base = self.base_url.rstrip("/")
+        if base.endswith("/chat/completions"):
+            return base
+        import re
+        if re.search(r'/v\d+$', base, re.IGNORECASE):
+            return f"{base}/chat/completions"
+        return f"{base}/v1/chat/completions"
 
     def test_connection(self) -> tuple[bool, str]:
         """Test connection to the endpoint with a 30s timeout."""

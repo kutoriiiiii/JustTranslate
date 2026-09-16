@@ -1,15 +1,15 @@
-# Just Translate Windows 智能翻译、润色与词典工作台
+# Just Translate 智能翻译、润色与词典工作台
 
 <div align="center">
 
 ![Just Translate Logo](resources/icon.png)
 
-**专为 Windows 高频语言处理与深度文本打磨打造的现代化桌面 AI 生产力工具**
+**专为高频语言处理与深度文本打磨打造的现代化桌面 AI 生产力工具**
 
-[![Platform](https://img.shields.io/badge/Platform-Windows-blue.svg)](#)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](#)
-[![GUI](https://img.shields.io/badge/GUI-PySide6%20(Qt%206)-orange.svg)](#)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](file:///F:/AI%20Workspace/Source%20Code/JustTranslate/README.md)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](file:///F:/AI%20Workspace/Source%20Code/JustTranslate/README.md)
+[![GUI](https://img.shields.io/badge/GUI-PySide6%20(Qt%206)-orange.svg)](file:///F:/AI%20Workspace/Source%20Code/JustTranslate/README.md)
+[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](file:///F:/AI%20Workspace/Source%20Code/JustTranslate/README.md)
 
 </div>
 
@@ -17,31 +17,9 @@
 
 ## 📖 产品简介
 
-**Just Translate Windows** 是一款面向 Windows 10/11 的桌面 AI 工作台，适合学者、工程师、跨语言写作者及重度多语种用户。它可连接本地开源模型服务（如 `Hy-MT2`、`Ollama`、`llama.cpp server`）和兼容 OpenAI API 的服务，提供翻译、润色与结构化卡片词典功能。
+**Just Translate** 是一款专为学者、工程师、跨语言写作者及重度多语种用户设计的现代化桌面级 AI 工作台。它深度融合了**本地开源大模型**（如 `Hy-MT2`、`Ollama`、`llama.cpp server`）与**顶级商业 API**（DeepSeek、OpenAI、GLM 等），通过纯异步非阻塞架构与人性化交互设计，提供**翻译、母语润色、结构化卡片词典**三位一体的高效生产力体验。
 
 软件摒弃了传统翻译软件臃肿复杂、广告频扰的弊端，专注于高响应度、视觉纯粹感以及极致的键盘操作流。
-
----
-
-## 📥 Download / 下载
-
-普通 Windows 用户无需配置 Python，可直接前往 [GitHub Releases](https://github.com/kutoriiiiii/JustTranslate/releases) 下载当前正式公开版本 **v1.0.0**。
-
-下载 **Windows x64 ZIP**，完整解压后运行 `Just Translate.exe`。首次使用时，请在设置中配置本地模型服务或兼容 OpenAI API 的服务。
-
-## 🖼️ Screenshots / 软件截图
-
-### Translation Workspace
-
-![Translation Workspace](docs/screenshots/translate.png)
-
-### Polishing Workspace
-
-![Polishing Workspace](docs/screenshots/polish.png)
-
-### Dictionary Workspace
-
-![Dictionary Workspace](docs/screenshots/dictionary.png)
 
 ---
 
@@ -49,20 +27,20 @@
 
 ### 1. 三大独立工作空间 (Three Core Workspaces)
 
-Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，各个模式拥有相互独立的输入输出状态、滚动进度与历史上下文：
+Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，各个模式拥有完全隔离的输入输出状态、滚动进度与历史上下文：
 
 - 🌐 **精准翻译 (Translate)**
   - **语境深度感知**：不仅是简单的逐词替换，更能完整理解长文本段落、逻辑连接词与隐喻，输出自然、通顺且忠实于原文的高质量译文。
   - **智能语种检测**：源语言支持 `Auto (自动检测)`，智能识别中、英、日等语言并根据使用习惯自动推荐最佳目标语。
   - **语言一键互换**：快捷键 `Alt+X` 或点击顶栏 `⇄` 按钮瞬时互换源语言与目标语言。
 - ✍️ **母语级润色 (Polish)**
-  - **严格同语种增强**：输入何种语言即以何种母语标准进行润色，尽量避免误翻译。
+  - **严格同语种增强**：输入何种语言即以何种母语标准进行润色，绝不发生误翻译。
   - **智能正文提纯**：润色结果包含高质量正文与优化要点说明；点击“📋 复制润色正文”即可**自动剥离解释与说明**，仅提取纯净正文至剪贴板。
   - **沉浸式防闪烁排版**：润色流式打字结束后直接保持纯文本高保真展示，消除因 HTML 重新解析带来的版面跳变与光标失焦。
 - 📖 **现代结构化卡片词典 (Dictionary)**
   - 告别枯燥的纯文本堆叠，自动将大模型输出解析为规范易读的视觉卡片：
     - **词头与假名/音标**：标准国际音标（IPA）或日语假名注音，配有专属复制与高保真语音朗读。
-    - **核心释义（严格双语对照）**：按照顶栏选择的语言严格对照输出（如中文 ➔ 日文优先输出日文母语释义与中文对照释义，尽量避免混入无关语言）。
+    - **核心释义（严格双语对照）**：按照顶栏选择的语言严格对照输出（如中文 ➔ 日文严格输出日文母语释义与中文对照释义，绝不混入无关语言）。
     - **典型双语例句**：每条例句均配备独立发音按钮（🔊）与一键复制按钮（📋），并伴随即时视觉交互特效。
     - **短语搭配与同/反义词流式卡片**：基于自适应流式网格（`FlowLayout`）自动折行呈现，随窗口缩放灵活重排。
     - **渐进式动态填充**：后台流式传输时，前端卡片容器固定展示并动态平滑填充，告别原始 Markdown 字符晃眼。
@@ -72,7 +50,7 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 ### 2. 双引擎语音朗读 (Neural & SAPI TTS Engine)
 
 - 🎙️ **微软 Edge Neural 神经语音**
-  - 在线接入微软高质量 Edge Neural 语音合成技术，音色自然、抑扬顿挫，提供更自然的发音体验。
+  - 在线接入微软高质量 Edge Neural 语音合成技术，音色自然、抑扬顿挫，媲美真人发音。
   - 覆盖丰富的主流发音人：
     - 中文：`zh-CN-XiaoxiaoNeural`（晓晓）
     - 英语：`en-US-AriaNeural` / `en-US-ChristopherNeural`
@@ -80,10 +58,10 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
     - 韩语：`ko-KR-SunHiNeural`
     - 法语、德语等更多语种自动智能映射。
 - 🛡️ **本地 SAPI5 离线容灾回退**
-  - 当处于离线环境或网络受阻时，系统可使用 Windows 本地 SAPI5 语音引擎回退；该功能依赖 Windows 语音包。
+  - 当处于离线环境或网络受阻时，系统智能降级至 Windows 本地 SAPI5 语音引擎，保障基础朗读可用性。
   - 内置语音引擎健康自检与安装指引对话框。
 - 🎯 **语言严格定向路由**
-  - 朗读引擎遵循控制栏当前设定的目标语种（如中译日模式下，即使词头含有日文汉字，也会优先调用日语引擎与注音发音，减少汉字优先导致的中文误读问题）。
+  - 朗读引擎严格遵循控制栏当前设定的目标语种（如中译日模式下，即使词头含有日文汉字，亦严格调用日语引擎与注音发音，彻底杜绝汉字优先误读中文问题）。
 
 ---
 
@@ -98,11 +76,11 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 
 ---
 
-### 4. 灵活交互与防塌陷布局 (BalancedSplitter)
+### 4. 极致交互与防塌陷布局 (BalancedSplitter)
 
-- 🛡️ **防折叠与防挤压保护**
-  - 针对原生 Qt `QSplitter` 拖动至极端边缘可能导致一侧面板折叠塌陷的问题进行保护。
-  - 左右面板设置 **280px 最小安全宽度**，限制极端拖动导致的面板压塌。
+- 🛡️ **永久防折叠与防挤压保护**
+  - 解决原生 Qt `QSplitter` 拖动至极端边缘导致某一侧面板永久折叠塌陷的痛点。
+  - 左右面板强制设置 **280px 最小安全宽度**，无论如何拖动均无法压塌面板。
 - ⚖️ **双击中线 1:1 对等复位**
   - 鼠标双击中央分隔条手柄，左右分栏瞬间平滑复位至 50%:50% 等宽布局。
   - 分隔条具有呼吸感悬浮动效与清晰的拖拽指示光标。
@@ -122,8 +100,8 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 ### 6. 流式抗闪烁沉浸阅读 (Anti-Flicker Streaming)
 
 - 🌊 **智能文本特征探测**
-  - 区分纯文本排版与富文本 Markdown 表格/数学公式：
-    - 普通文本与润色结果：流式打字结束后直接保持纯文本排版，避免不必要的强制重绘（`setHtml`），减少视觉抖动与选择焦点丢失。
+  - 区分纯文本排版与富富文本 Markdown 表格/数学公式：
+    - 普通文本与润色结果：流式打字结束后直接保持纯文本排版，**严禁使用强制重绘（`setHtml`）**，彻底消除视觉抖动与选择焦点丢失。
     - 富文本（含代码块、复杂 Markdown 语法）：流式完成后平滑过渡到富文本渲染器。
 
 ---
@@ -142,7 +120,7 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 ### 8. 历史记忆与本地持久化 (History Management)
 
 - 💾 **本地 SQLite 原生数据库 (`data/history.db`)**
-  - 翻译、润色与查词历史自动写入本地数据库，默认保存在用户本地磁盘，不主动上传云端。
+  - 翻译、润色与查词历史自动写入本地数据库，数据完全归属于用户本地磁盘，绝不上云。
   - 快捷键 `Ctrl+H` 随时呼出记忆管理器，支持按模式过滤、关键词全文模糊搜索、元数据查看以及一键导入回填。
   - 支持自定义记忆容量上限（50 / 100 / 500 / 无限制），自动遵循 LRU 原则修剪历史。
 
@@ -160,20 +138,20 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
   - 若在模型生成中或生成完毕后用户编辑、修改了输入区原文，输出面板（译文区及词典卡片区）顶部控制栏即刻呈现醒目的琥珀色（`#F59E0B`）常驻标签：
     `⚠ 原文已修改，结果可能不准确`
   - 若用户撤销修改还原为请求快照，或重新点击执行/按 `Ctrl+Enter` 触发新请求，该标签即刻平滑隐去。
-  - 严格隔离程序性回填（如双向互换 `Alt+X`、历史记录导入、回译、OCR 提取回填等），减少不必要的误报。
+  - 严格隔离程序性回填（如双向互换 `Alt+X`、历史记录导入、回译、OCR 提取回填等），绝不发生虚假预警。
 
 ---
 
 ### 10. 本地环境智能代理绕过与任务并发治理 (Loopback Bypass & Concurrency Control)
 
 - 🌐 **本地 Loopback 环境显式绕过代理**
-  - 针对 `127.0.0.1`、`localhost`、`::1` 等本地大模型服务（如 Ollama、llama.cpp、vLLM、Hy-MT2），自动显式绕过系统 `HTTP_PROXY` / `HTTPS_PROXY`，直连本地回环地址，避免常见的 VPN/代理环境下本地端口被错误代理，减少 502、连接中断与超时问题。
+  - 针对 `127.0.0.1`、`localhost`、`::1` 等本地大模型服务（如 Ollama、llama.cpp、vLLM、Hy-MT2），自动显式绕过系统 `HTTP_PROXY` / `HTTPS_PROXY`，直连本地回环地址，彻底根除 VPN/代理开启时本地端口被代理劫持导致的 502/连接中断/超时故障。
   - 普通远程商业 API（DeepSeek、OpenAI、智谱 GLM 等）继续平滑尊重代理路由。
   - 统一覆盖 `/models` 自动拉取、连通性探测、流式生成和 OCR 识图请求。
 - ⚡ **毫秒级即时停止与旧任务防串写机制**
-  - **模式级严格单调递增 `task_id`**：每个工作区维护独立的全局流水号，所有后台工作线程的回调携带唯一任务 ID，识别并丢弃已被替换或中止的旧任务残留信号，降低旧任务数据串写的风险。
-  - **连续提交无缝替换**：高频点击执行或连按快捷键时，自动非阻塞中止前序任务并立即启动新任务，移除主线程 `wait(500)` 同步等待造成的界面阻塞。
-  - **跨线程 `StreamController` 断开 Socket**：在用户主动按 `Esc` 或点击“停止”按钮时，直接断开活跃网络连接与响应流，解除底层 Socket 阻塞，让界面更快响应“已停止”，且不产生无效历史记录。
+  - **模式级严格单调递增 `task_id`**：每个工作区维护独立的全局流水号，所有后台工作线程的回调携带唯一任务 ID，强行拦截并丢弃已被替换或中止的旧任务残留信号，杜绝脏数据串写。
+  - **连续提交无缝替换**：高频点击执行或连按快捷键时，自动非阻塞中止前序任务并立即启动新任务，彻底移除主线程 `wait(500)` 同步阻塞卡死。
+  - **跨线程 `StreamController` 强断 Socket**：在用户主动按 `Esc` 或点击“停止”按钮时，瞬间直接断开活跃网络连接与响应流，解除底层 Socket 阻塞，毫秒级实现界面“已停止”响应，不报错且不产生无效历史记录。
 
 ---
 
@@ -182,7 +160,7 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 - ℹ️ **设置面板全景关于选项卡**
   - 在【⚙ 设置】对话框中新增独立 **【关于】** 选项卡；
   - 核心展示软件专属高清矢量品牌图标、应用主标题与产品定位；
-  - 明确标注软件作者为 **Kutori**，当前版本号为 **1.0.0**；
+  - 明确标注软件作者为 **Kutori**，当前版本号为 **1.0.1**；
   - 详细汇总运行环境栈（Python 3.10+ / PySide6 / Edge Neural TTS / GLM-OCR）与开源协议（MIT License）；
   - 完整适配暗黑与明亮双主题的高品质卡片质感排版。
 
@@ -229,63 +207,45 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 > [!TIP]
 > 填写完成后可点击 **【🔍 测试连接】**，系统将在 30 秒超时阈值内发起真实握手，并反馈实时 HTTP 状态码与延迟。
 
-## ⚙️ 配置文件说明 (Configuration)
-项目启动时若未检测到 `settings.json`，将自动生成默认初始配置。你也可以参考根目录提供的示例配置文件：
-
-```powershell
-# 复制示例配置
-Copy-Item settings.example.json settings.json
-```
-
-在 `settings.json` 中配置你的本地模型端点或商业 API Key（如 DeepSeek、OpenAI 等）。`settings.json` 已被 `.gitignore` 包含，可降低意外提交到版本控制的风险。
-
 ---
 
 ## 💻 开发者与构建指引
 
-### 1. Windows 环境准备
-支持 Windows 10/11，推荐使用 Python 3.10+：
-```powershell
-# 1. 克隆源码并进入项目根目录
-git clone https://github.com/kutoriiiiii/JustTranslate.git
-cd JustTranslate
+### 1. 环境准备
+推荐使用 Python 3.10+ 环境：
+```bash
+# 1. 克隆或进入源码目录
+cd "F:\AI Workspace\Source Code\JustTranslate"
 
-# 2. 创建虚拟环境并安装运行依赖
-py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade pip
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+# 2. 安装项目依赖
+pip install -r requirements.txt
 ```
 
 ### 2. 启动开发态程序
-```powershell
-.\.venv\Scripts\python.exe main.py
+```bash
+python main.py
 ```
 
 ### 3. 运行完整自动化测试套件
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```bash
+python -m unittest discover -s tests -v
 ```
 
 ### 4. 打包为单目录独立可执行程序
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-.\.venv\Scripts\python.exe -m PyInstaller "Just Translate.spec" --noconfirm --clean
+```bash
+pyinstaller "Just Translate.spec" --noconfirm --clean
 ```
-编译产物将生成在 `dist/Just Translate/` 目录下，可直接运行 `Just Translate.exe`。
+编译产物将生成在 `dist\Just Translate\` 目录下，可直接运行 `Just Translate.exe`。
 
 ---
 
-## 📁 项目目录结构 (Project Structure)
+## 📁 目录架构规范与重要资产保护
 
 ```text
 JustTranslate/
 ├── main.py                     # 应用主入口，注册高 DPI、系统托盘与主题引擎
 ├── Just Translate.spec         # PyInstaller 打包构建定义规范
 ├── requirements.txt            # 项目依赖声明
-├── requirements-dev.txt        # 打包所需开发依赖
-├── settings.example.json       # 样例配置文件 (含占位符)
-├── LICENSE                     # MIT 开源许可证
-├── runtime_hooks/              # PyInstaller 运行时 DLL 搜索路径修正
 ├── config/                     # 配置与全局定义（语言注册表、系统提示词、设置管理）
 ├── core/                       # 核心业务引擎（LLM流式客户端、TTS管理器、OCR流水线、词典解析器、分词对齐）
 ├── ui/                         # 现代化 PySide6 界面组件库与样式引擎
@@ -295,14 +255,6 @@ JustTranslate/
 └── tests/                      # 92 项自动化单元测试用例
 ```
 
----
-
-## 📌 开发状态 (Development Status)
-
-本项目处于积极维护与迭代状态 (**Actively Developed**)。
-
----
-
-## 📄 开源许可证 (License)
-
-本项目基于 [MIT License](LICENSE) 开源。
+> [!CAUTION]
+> **生产目录资产保护准则**：
+> 生产实例目录（`F:\Programs\Just Translate\`）中的用户配置文件 `settings.json` 与历史数据库 `data/history.db` 属于核心不可覆盖资产，在进行版本迭代部署时必须受到严格保护，严禁执行破坏性覆盖！

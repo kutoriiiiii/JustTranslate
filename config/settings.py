@@ -16,7 +16,7 @@ def _get_base_dir() -> Path:
 SETTINGS_FILE = _get_base_dir() / "settings.json"
 
 APP_NAME = "Just Translate"
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.0.1"
 APP_AUTHOR = "Kutori"
 APP_DESCRIPTION = "专为高频语言处理与深度文本打磨打造的现代化桌面 AI 生产力工具"
 
