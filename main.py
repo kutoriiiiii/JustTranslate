@@ -35,6 +35,11 @@ def main():
     app.setApplicationName("Just Translate")
     app.setOrganizationName("AI Workspace")
 
+    # 全局解绑鼠标滚轮对下拉菜单与微调框的误触改变，确保页面滚动平滑透传
+    from ui.components.wheel_filter import GlobalNoWheelEventFilter
+    wheel_filter = GlobalNoWheelEventFilter(app)
+    app.installEventFilter(wheel_filter)
+
     # 挂载应用图标
     icon_path = PROJECT_ROOT / "resources" / "icon.png"
     if icon_path.exists():

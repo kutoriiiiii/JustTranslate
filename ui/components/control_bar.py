@@ -11,6 +11,7 @@ from config.settings import settings
 from core.theme_manager import ThemeManager
 from ui.components.language_menu_button import LanguageMenuButton
 from ui.components.api_status_indicator import ApiStatusIndicator
+from ui.components.wheel_filter import NoWheelComboBox
 
 class ControlBar(QFrame):
     """Top bar containing mode buttons, language pickers, model selector, and settings."""
@@ -115,7 +116,7 @@ class ControlBar(QFrame):
         lbl_model.setStyleSheet("color: #A1A1AA;")
         row2.addWidget(lbl_model)
 
-        self.combo_profile = QComboBox()
+        self.combo_profile = NoWheelComboBox()
         self.combo_profile.setMinimumWidth(130)
         self.combo_profile.setCursor(Qt.PointingHandCursor)
         self.reload_profiles()

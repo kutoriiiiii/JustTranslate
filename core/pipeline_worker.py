@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Pipeline worker orchestrating OCR text recognition and LLM streaming translation."""
+"""Pipeline worker orchestrating OCR text recognition and LLM streaming translation with reasoning isolation."""
 
 from typing import Optional, List, Dict, Union
 from PIL import Image
@@ -7,6 +7,7 @@ from PySide6.QtCore import QThread, Signal
 from .llm_client import LLMClient
 from .ocr_client import OCRClient
 from .network_utils import StreamController
+
 
 class PipelineWorker(QThread):
     """Two-stage worker: OCR extraction followed by streaming LLM translation/polishing."""
@@ -19,6 +20,7 @@ class PipelineWorker(QThread):
     stopped = Signal(str)
     metrics_updated = Signal(int, float)
     metrics_completed = Signal(int, float)
+    reasoning_received = Signal(str)
 
     def __init__(
         self,
@@ -27,7 +29,10 @@ class PipelineWorker(QThread):
         image_input: Optional[Union[bytes, str, Image.Image]] = None,
         ocr_client: Optional[OCRClient] = None,
         raw_text: str = "",
-        temperature: float = 0.3
+        temperature: float = 0.3,
+        reasoning_intent: str = "auto",
+        effort_level: str = "medium",
+        budget_tokens: Optional[int] = None
     ):
         super().__init__()
         self.llm_client = llm_client
@@ -36,14 +41,24 @@ class PipelineWorker(QThread):
         self.ocr_client = ocr_client
         self.raw_text = raw_text
         self.temperature = temperature
+        self.reasoning_intent = reasoning_intent
+        self.effort_level = effort_level
+        self.budget_tokens = budget_tokens
         self._is_aborted = False
         self._accumulated_text = ""
+        self._is_thinking = False
         self.controller = StreamController()
 
     def abort(self):
         """Signals the worker and forcibly closes active sockets/requests immediately."""
         self._is_aborted = True
         self.controller.abort()
+
+    def _on_reasoning_chunk(self, chunk: str):
+        if not self._is_thinking:
+            self._is_thinking = True
+            self.status_changed.emit("正在深度思考推理...")
+        self.reasoning_received.emit(chunk)
 
     def run(self):
         try:
@@ -78,14 +93,18 @@ class PipelineWorker(QThread):
 
             # 第二阶段：联动翻译 / 润色 / 词典
             messages = self.messages_builder_fn(text_to_process)
-            self.status_changed.emit("正在连接翻译模型并流式生成...")
+            self.status_changed.emit("正在连接模型并流式生成...")
 
             import time
             t_req_start = time.time()
             generator = self.llm_client.stream_chat(
                 messages, 
                 temperature=self.temperature,
-                controller=self.controller
+                controller=self.controller,
+                reasoning_intent=self.reasoning_intent,
+                effort_level=self.effort_level,
+                budget_tokens=self.budget_tokens,
+                reasoning_callback=self._on_reasoning_chunk
             )
             first_token = True
             t_first_token = None

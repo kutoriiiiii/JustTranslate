@@ -192,6 +192,8 @@ class SentenceTranslateDialog(QDialog):
             base_url=self.profile.get("base_url", "http://127.0.0.1:8001/v1"),
             api_key=self.profile.get("api_key", ""),
             model=self.profile.get("model", ""),
+            protocol=self.profile.get("protocol", "openai_chat"),
+            provider=self.profile.get("id", ""),
             timeout=30.0,
             max_retries=settings.get("max_retries", 2)
         )

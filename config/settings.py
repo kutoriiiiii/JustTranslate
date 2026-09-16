@@ -16,7 +16,7 @@ def _get_base_dir() -> Path:
 SETTINGS_FILE = _get_base_dir() / "settings.json"
 
 APP_NAME = "Just Translate"
-APP_VERSION = "1.0.1"
+APP_VERSION = "1.1.2"
 APP_AUTHOR = "Kutori"
 APP_DESCRIPTION = "专为高频语言处理与深度文本打磨打造的现代化桌面 AI 生产力工具"
 
@@ -24,31 +24,39 @@ DEFAULT_PROFILES = [
     {
         "id": "llama_cpp",
         "name": "本地 Hy-MT2 & GLM-OCR (8001)",
+        "protocol": "openai_chat",
         "base_url": "http://127.0.0.1:8001/v1",
         "api_key": "sk-no-key",
         "model": "Hy-MT2-7B",
-        "ocr_model": "GLM-OCR"
+        "ocr_model": "GLM-OCR",
+        "reasoning_override": "auto"
     },
     {
         "id": "ollama",
         "name": "本地 Ollama",
+        "protocol": "ollama_native",
         "base_url": "http://127.0.0.1:11434/v1",
         "api_key": "ollama",
-        "model": "qwen2.5:7b"
+        "model": "qwen2.5:7b",
+        "reasoning_override": "auto"
     },
     {
         "id": "deepseek",
         "name": "DeepSeek API",
+        "protocol": "openai_chat",
         "base_url": "https://api.deepseek.com/v1",
         "api_key": "",
-        "model": "deepseek-chat"
+        "model": "deepseek-flash",
+        "reasoning_override": "auto"
     },
     {
         "id": "openai",
         "name": "OpenAI API",
+        "protocol": "openai_chat",
         "base_url": "https://api.openai.com/v1",
         "api_key": "",
-        "model": "gpt-4o-mini"
+        "model": "gpt-4o-mini",
+        "reasoning_override": "auto"
     }
 ]
 
@@ -59,6 +67,17 @@ DEFAULT_SETTINGS: Dict[str, Any] = {
     "timeout_seconds": 30.0,
     "max_retries": 2,
     "auto_detect_language": True,
+    "reasoning_mode": "auto",  # "auto", "always_on", "always_off"
+    "reasoning_effort": "medium",  # "low", "medium", "high", "dynamic"
+    "fast_translate_threshold_chars": 150,
+    "fast_translate_threshold_sentences": 2,
+    "feature_reasoning_overrides": {
+        "dictionary": "off",
+        "ocr": "off",
+        "fast_translate": "off",
+        "deep_translate": "inherit",
+        "polish": "on"
+    },
     "custom_prompts": {
         "translate": "",
         "polish": "",
@@ -110,9 +129,19 @@ class AppSettings:
                 with open(self.file_path, "r", encoding="utf-8") as f:
                     saved = json.load(f)
                     self.data = {**DEFAULT_SETTINGS, **saved}
-                    # 确保 profiles 结构正确
+                    # 确保 profiles 结构正确并补全字段
                     if "profiles" not in self.data or not self.data["profiles"]:
                         self.data["profiles"] = DEFAULT_PROFILES
+                    else:
+                        for p in self.data["profiles"]:
+                            p.setdefault("protocol", "openai_chat")
+                            p.setdefault("reasoning_override", "auto")
+                    # 确保 feature_reasoning_overrides 包含所有功能子项
+                    saved_overrides = self.data.get("feature_reasoning_overrides", {})
+                    self.data["feature_reasoning_overrides"] = {
+                        **DEFAULT_SETTINGS["feature_reasoning_overrides"],
+                        **saved_overrides
+                    }
                     return
             except Exception:
                 pass

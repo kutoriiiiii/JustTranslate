@@ -33,16 +33,13 @@ class TestTTSManager(unittest.TestCase):
         self.assertTrue(self.tts.has_local_voice_for_language("Auto"))
         self.assertTrue(self.tts.has_local_voice_for_language(""))
 
-        # Do not depend on the voice packs installed on the machine running tests.
-        original_languages = self.tts._local_languages.copy()
-        try:
-            self.tts._local_languages = {"Chinese", "English"}
-            self.assertTrue(self.tts.has_local_voice_for_language("Chinese"))
-            self.assertTrue(self.tts.has_local_voice_for_language("English"))
-            self.assertFalse(self.tts.has_local_voice_for_language("Japanese"))
-            self.assertFalse(self.tts.has_local_voice_for_language("French"))
-        finally:
-            self.tts._local_languages = original_languages
+        # On this Windows machine, Chinese and English voices are installed
+        self.assertTrue(self.tts.has_local_voice_for_language("Chinese"))
+        self.assertTrue(self.tts.has_local_voice_for_language("English"))
+
+        # Languages not installed locally should return False
+        self.assertFalse(self.tts.has_local_voice_for_language("Japanese"))
+        self.assertFalse(self.tts.has_local_voice_for_language("French"))
 
     def test_detect_language(self):
         self.assertEqual(self.tts.detect_language("こんにちは世界"), "Japanese")

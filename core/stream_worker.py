@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Stream worker thread based on PySide6 QThread."""
+"""Stream worker thread based on PySide6 QThread with thinking mode isolation."""
 
 from PySide6.QtCore import QThread, Signal
-from typing import List, Dict
+from typing import List, Dict, Optional
 from .llm_client import LLMClient
 from .network_utils import StreamController
+
 
 class StreamWorker(QThread):
     """Worker thread that executes LLM streaming without blocking GUI."""
@@ -16,20 +17,39 @@ class StreamWorker(QThread):
     stopped = Signal(str)
     metrics_updated = Signal(int, float)
     metrics_completed = Signal(int, float)
+    reasoning_received = Signal(str)
 
-    def __init__(self, client: LLMClient, messages: List[Dict[str, str]], temperature: float = 0.3):
+    def __init__(
+        self,
+        client: LLMClient,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.3,
+        reasoning_intent: str = "auto",
+        effort_level: str = "medium",
+        budget_tokens: Optional[int] = None
+    ):
         super().__init__()
         self.client = client
         self.messages = messages
         self.temperature = temperature
+        self.reasoning_intent = reasoning_intent
+        self.effort_level = effort_level
+        self.budget_tokens = budget_tokens
         self._is_aborted = False
         self._accumulated_text = ""
+        self._is_thinking = False
         self.controller = StreamController()
 
     def abort(self):
         """Forcibly interrupts the active network stream and stops the worker immediately."""
         self._is_aborted = True
         self.controller.abort()
+
+    def _on_reasoning_chunk(self, chunk: str):
+        if not self._is_thinking:
+            self._is_thinking = True
+            self.status_changed.emit("正在深度思考推理...")
+        self.reasoning_received.emit(chunk)
 
     def run(self):
         self.status_changed.emit("正在请求模型并建立连接...")
@@ -39,7 +59,11 @@ class StreamWorker(QThread):
             generator = self.client.stream_chat(
                 self.messages, 
                 temperature=self.temperature, 
-                controller=self.controller
+                controller=self.controller,
+                reasoning_intent=self.reasoning_intent,
+                effort_level=self.effort_level,
+                budget_tokens=self.budget_tokens,
+                reasoning_callback=self._on_reasoning_chunk
             )
             first_token = True
             t_first_token = None

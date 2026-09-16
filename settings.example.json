@@ -1,4 +1,4 @@
-﻿{
+{
   "active_profile_id": "llama_cpp",
   "profiles": [
     {
@@ -7,34 +7,53 @@
       "base_url": "http://127.0.0.1:8001/v1",
       "api_key": "sk-no-key",
       "model": "Hy-MT2-7B",
-      "ocr_model": "GLM-OCR"
+      "ocr_model": "GLM-OCR",
+      "protocol": "openai_chat",
+      "reasoning_override": "auto"
     },
     {
       "id": "ollama",
       "name": "本地 Ollama",
       "base_url": "http://127.0.0.1:11434/v1",
       "api_key": "ollama",
-      "model": "qwen2.5:7b"
+      "model": "qwen2.5:7b",
+      "protocol": "openai_chat",
+      "reasoning_override": "auto"
     },
     {
       "id": "deepseek",
       "name": "DeepSeek API",
       "base_url": "https://api.deepseek.com/v1",
       "api_key": "YOUR_DEEPSEEK_API_KEY_HERE",
-      "model": "deepseek-chat"
+      "model": "deepseek-flash",
+      "protocol": "openai_chat",
+      "reasoning_override": "auto"
     },
     {
       "id": "openai",
       "name": "OpenAI API",
       "base_url": "https://api.openai.com/v1",
       "api_key": "YOUR_OPENAI_API_KEY_HERE",
-      "model": "gpt-4o-mini"
+      "model": "gpt-4o-mini",
+      "protocol": "openai_chat",
+      "reasoning_override": "auto"
     }
   ],
   "temperature": 0.3,
   "timeout_seconds": 30.0,
   "max_retries": 2,
   "auto_detect_language": true,
+  "reasoning_mode": "auto",
+  "reasoning_effort": "medium",
+  "fast_translate_threshold_chars": 150,
+  "fast_translate_threshold_sentences": 2,
+  "feature_reasoning_overrides": {
+    "dictionary": "off",
+    "ocr": "off",
+    "fast_translate": "off",
+    "deep_translate": "inherit",
+    "polish": "on"
+  },
   "custom_prompts": {
     "translate": "",
     "polish": "",

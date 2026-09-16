@@ -13,6 +13,7 @@ from config.settings import settings
 from core.sentence_aligner import split_sentences_with_spans, find_sentence_at_position, SentenceSpan
 from core.tts_manager import tts_manager
 from core.theme_manager import ThemeManager
+from ui.components.wheel_filter import NoWheelComboBox
 
 class CustomOutputBrowser(QTextBrowser):
     """Browser supporting sentence double-click selection, non-destructive highlighting, and contextual sentence actions."""
@@ -202,7 +203,7 @@ class OutputPanel(QFrame):
         lbl_fmt.setObjectName("statusLabel")
         header_layout.addWidget(lbl_fmt)
 
-        self.combo_format = QComboBox()
+        self.combo_format = NoWheelComboBox()
         self.combo_format.setCursor(Qt.PointingHandCursor)
         self.combo_format.addItem("✨ Markdown 渲染", "markdown")
         self.combo_format.addItem("📄 纯文本", "plain")

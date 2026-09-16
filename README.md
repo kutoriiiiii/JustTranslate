@@ -160,7 +160,7 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 - ℹ️ **设置面板全景关于选项卡**
   - 在【⚙ 设置】对话框中新增独立 **【关于】** 选项卡；
   - 核心展示软件专属高清矢量品牌图标、应用主标题与产品定位；
-  - 明确标注软件作者为 **Kutori**，当前版本号为 **1.0.1**；
+  - 明确标注软件作者为 **Kutori**，当前版本号为 **1.1.2**；
   - 详细汇总运行环境栈（Python 3.10+ / PySide6 / Edge Neural TTS / GLM-OCR）与开源协议（MIT License）；
   - 完整适配暗黑与明亮双主题的高品质卡片质感排版。
 
@@ -202,7 +202,7 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 ### 4. 外部商业 API（如 DeepSeek / OpenAI）
 - **Base URL**: `https://api.deepseek.com/v1`
 - **API Key**: `sk-xxxxxxxxxxxxxxxxxxxxxxxx`
-- **模型名称**: `deepseek-chat` / `deepseek-reasoner`
+- **模型名称**: `deepseek-flash` / `deepseek-reasoner`
 
 > [!TIP]
 > 填写完成后可点击 **【🔍 测试连接】**，系统将在 30 秒超时阈值内发起真实握手，并反馈实时 HTTP 状态码与延迟。
@@ -215,7 +215,8 @@ Just Translate 采用双栈独立工作区（`Dual QStackedWidget`）设计，�
 推荐使用 Python 3.10+ 环境：
 ```bash
 # 1. 克隆或进入源码目录
-cd "F:\AI Workspace\Source Code\JustTranslate"
+git clone https://github.com/your-username/JustTranslate.git
+cd JustTranslate
 
 # 2. 安装项目依赖
 pip install -r requirements.txt

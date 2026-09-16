@@ -11,6 +11,7 @@ from PySide6.QtCore import Signal, Qt
 from config.settings import settings
 from core.history_manager import history_manager
 from .balanced_splitter import BalancedSplitter
+from ui.components.wheel_filter import NoWheelComboBox
 
 class HistoryDialog(QDialog):
     """Dialog for viewing, searching, copying, and re-importing past translation & generation history."""
@@ -42,7 +43,7 @@ class HistoryDialog(QDialog):
         top_bar.addWidget(self.edit_search, 1)
 
         top_bar.addWidget(QLabel("模式:"))
-        self.combo_mode = QComboBox()
+        self.combo_mode = NoWheelComboBox()
         self.combo_mode.addItem("全部模式", "all")
         self.combo_mode.addItem("翻译", "translate")
         self.combo_mode.addItem("润色", "polish")

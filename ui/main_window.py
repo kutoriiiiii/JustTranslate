@@ -585,10 +585,67 @@ class MainWindow(QMainWindow):
         # 允许在生成过程中编辑原文或再次提交（取消并替换），保持输入面板可用
         in_p.set_enabled(True)
 
+        protocol = profile.get("protocol", "openai_chat")
+        provider = profile.get("id", "")
+
+        # 思考模式 3 级覆盖机制计算 (子模块覆盖 > 全局设置 + 快翻短句判定)
+        r_mode = settings.get("reasoning_mode", "auto")
+        r_effort = settings.get("reasoning_effort", "medium")
+        overrides = settings.get("feature_reasoning_overrides", {})
+        profile_override = profile.get("reasoning_override", "auto")
+
+        if mode == "dictionary":
+            sub_feature = "dictionary"
+        elif image_input:
+            sub_feature = "ocr"
+        elif mode == "polish":
+            sub_feature = "polish"
+        else:
+            # 翻译模式：依据短句快翻标准（字符数 + 断句数 + 排除代码/公式结构）判定
+            from core.text_utils import is_fast_translate_eligible
+            th_chars = int(settings.get("fast_translate_threshold_chars", 150))
+            th_sentences = int(settings.get("fast_translate_threshold_sentences", 2))
+            if is_fast_translate_eligible(text, threshold_chars=th_chars, threshold_sentences=th_sentences):
+                sub_feature = "fast_translate"
+            else:
+                sub_feature = "deep_translate"
+
+        sub_override = overrides.get(sub_feature, "inherit")
+        if sub_override == "off":
+            effective_reasoning = "off"
+        elif sub_override == "on":
+            effective_reasoning = "on"
+        elif sub_override == "passthrough":
+            effective_reasoning = "passthrough"
+        else:
+            # 跟随全局
+            if r_mode == "always_on":
+                effective_reasoning = "on"
+            elif r_mode == "always_off":
+                effective_reasoning = "off"
+            elif r_mode == "passthrough":
+                effective_reasoning = "passthrough"
+            else:
+                # 自动模式：词典、OCR、快翻默认关闭思考；长文翻译与润色默认开启
+                if sub_feature in ("dictionary", "ocr", "fast_translate"):
+                    effective_reasoning = "off"
+                else:
+                    effective_reasoning = "on"
+
+        # Profile 级别逃生口覆盖（最高优先级）
+        if profile_override == "passthrough":
+            effective_reasoning = "passthrough"
+        elif profile_override in ("force_off", "unsupported"):
+            effective_reasoning = "off"
+        elif profile_override == "force_on":
+            effective_reasoning = "on"
+
         client = LLMClient(
             base_url=base_url,
             api_key=api_key,
             model=model,
+            protocol=protocol,
+            provider=provider,
             timeout=30.0,
             max_retries=settings.get("max_retries", 2)
         )
@@ -600,7 +657,9 @@ class MainWindow(QMainWindow):
             image_input=image_input,
             ocr_client=ocr_client,
             raw_text=text,
-            temperature=temperature
+            temperature=temperature,
+            reasoning_intent=effective_reasoning,
+            effort_level=r_effort
         )
         self.workers[mode] = worker
 

@@ -351,3 +351,53 @@ def has_markdown_features(text: str) -> bool:
 
     return False
 
+
+def is_fast_translate_eligible(
+    text: str,
+    threshold_chars: int = 150,
+    threshold_sentences: int = 2
+) -> bool:
+    """Evaluates whether the input text qualifies for fast (short-sentence) translation without deep thinking.
+    
+    Standardized Criteria:
+    1. threshold_chars > 0 and len(clean_text) < threshold_chars
+    2. Sentence count <= threshold_sentences
+    3. Structural Exemption: if text contains code blocks, LaTeX formulas, or Markdown lists/tables,
+       it requires structural preservation and is NOT downgraded to fast translate.
+    """
+    if not text:
+        return False
+    clean = text.strip()
+    if not clean:
+        return False
+    if threshold_chars <= 0:
+        # Disabled when threshold is 0
+        return False
+
+    if len(clean) >= threshold_chars:
+        return False
+
+    # Check structural exemptions: code blocks or LaTeX formulas
+    if "```" in clean or "$" in clean:
+        return False
+
+    # Check Markdown lists or tables
+    if re.search(r'(?m)^[\*\-\+]\s+\S+', clean) or re.search(r'(?m)^\d+\.\s+\S+', clean):
+        return False
+    if '|' in clean and '\n' in clean:
+        return False
+
+    # Check sentence count
+    try:
+        from core.sentence_aligner import split_sentences_with_spans
+        spans = split_sentences_with_spans(clean)
+        if len(spans) > threshold_sentences:
+            return False
+    except Exception:
+        # Fallback simple split on punctuation
+        count = len([s for s in re.split(r'[。！？.!?\n]+', clean) if s.strip()])
+        if count > threshold_sentences:
+            return False
+
+    return True
+
