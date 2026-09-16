@@ -29,6 +29,20 @@
 
 下载 **Windows x64 ZIP**，完整解压后运行 `Just Translate.exe`。首次使用时，请在设置中配置本地模型服务或兼容 OpenAI API 的服务。
 
+## 🖼️ Screenshots / 软件截图
+
+### Translation Workspace
+
+![Translation Workspace](docs/screenshots/translate.png)
+
+### Polishing Workspace
+
+![Polishing Workspace](docs/screenshots/polish.png)
+
+### Dictionary Workspace
+
+![Dictionary Workspace](docs/screenshots/dictionary.png)
+
 ---
 
 ## ✨ 核心功能与特性全景
